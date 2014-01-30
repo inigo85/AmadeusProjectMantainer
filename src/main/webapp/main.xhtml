@@ -6,37 +6,62 @@
 
 </h:head>
 <h:body>
-	<h:form id="form">
-		<p:growl id="messages" showDetail="true" />
+	<p:layout fullPage="true" id="lay">
+		<!--   <p:layoutUnit position="north" size="65" header="Project List"
+			resizable="false" closable="false" collapsible="false">
+		</p:layoutUnit>-->
+		<p:layoutUnit position="center">
+			<p:tabView id="tabView">
 
-		<p:dataTable id="prj" var="project" value="#{projectBean.projectList}"
-			editable="true">
+				<p:tab id="tab1" title="Projects">
+					<h:form id="form">
+						<p:growl id="messages" showDetail="true" />
 
-			<p:ajax event="rowEdit" listener="#{projectBean.onEdit}"
-				update=":form:messages" />
-			<p:ajax event="rowEditCancel" listener="#{projectBean.onCancel}"
-				update=":form:messages" />
+						<p:dataTable id="prj" var="project"
+							value="#{projectBean.projectList}" editable="true"
+							paginator="true"
+							paginatorTemplate="{PreviousPageLink} {CurrentPageReport} {NextPageLink} {RowsPerPageDropdown}"
+							rows="20" type="none" paginatorPosition="bottom"
+							rowsPerPageTemplate="20,25,30"
+							filteredValue="#{projectBean.filteredList}">
 
-			<p:column headerText="Code" sortBy="#{project.code}" style="width:200px">
-				<h:outputText value="#{project.code}" />
-			</p:column>
 
-			<p:column headerText="Comments">
-				<p:cellEditor>
-					<f:facet name="output">
-						<h:outputText value="#{project.comments}" />
-					</f:facet>
-					<f:facet name="input">
-						<h:inputText value="#{project.comments}" style="width:900px"/>
-					</f:facet>
-				</p:cellEditor>
-			</p:column>
+							<p:ajax event="rowEdit" listener="#{projectBean.onEdit}"
+								update=":tabView:form:messages" />
+							<p:ajax event="rowEditCancel" listener="#{projectBean.onCancel}"
+								update=":tabView:form:messages" />
 
-			<p:column headerText="Edit" style="width:6%">
-				<p:rowEditor />
-			</p:column>
+							<p:column headerText="Code" sortBy="#{project.code}"
+								style="width:200px" filterBy="code" filterMatchMode="contains">
+								<h:outputText value="#{project.code}" />
+							</p:column>
 
-		</p:dataTable>
-	</h:form>
+							<p:column headerText="Comments" filterBy="comments"
+								filterMatchMode="contains">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{project.comments}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{project.comments}" style="width:900px" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column headerText="Edit" style="width:6%">
+								<p:rowEditor />
+							</p:column>
+
+						</p:dataTable>
+					</h:form>
+				</p:tab>
+				<p:tab id="tab2" title="Another Tabs?">
+					<h:form id="antoherForm">
+					</h:form>
+				</p:tab>
+			</p:tabView>
+		</p:layoutUnit>
+
+	</p:layout>
 </h:body>
 </html>

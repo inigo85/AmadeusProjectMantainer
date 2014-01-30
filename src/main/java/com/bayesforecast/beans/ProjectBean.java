@@ -21,6 +21,7 @@ public class ProjectBean implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	private List<Project> projectList;
+	private List<Project> filteredList;
 	private DatabaseFacade db;
 	
 	
@@ -56,5 +57,15 @@ public class ProjectBean implements Serializable{
 	public void setProjectList(List<Project> projectList) {
 		this.projectList = projectList;
 	}
+
+	public List<Project> getFilteredList() {
+		return filteredList;
+	}
+
+	public void setFilteredList(List<Project> filteredList) {
+		this.filteredList = filteredList;
+	}
+	
+	
 
 }

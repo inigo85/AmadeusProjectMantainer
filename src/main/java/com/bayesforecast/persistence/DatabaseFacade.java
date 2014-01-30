@@ -120,6 +120,7 @@ public class DatabaseFacade implements IDatabaseFacade {
 			throw new SQLException(e);
 		} finally {
 			DatabaseUtil.close(st);
+			DatabaseUtil.close(connection);
 		}
 
 	}
