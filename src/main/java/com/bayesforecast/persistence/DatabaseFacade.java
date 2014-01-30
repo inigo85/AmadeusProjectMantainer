@@ -18,7 +18,7 @@ import com.bayesforecsast.modelo.Project;
 public class DatabaseFacade implements IDatabaseFacade {
 
 	private static DatabaseFacade dbFacade;
-	private DataSource ds; /* ?¿?*/
+	private DataSource ds; /* ?¿? */
 
 	/**
 	 * Constructor privado de DatabaseFacade (patrón Singleton).
@@ -30,15 +30,15 @@ public class DatabaseFacade implements IDatabaseFacade {
 	 */
 	private DatabaseFacade() throws ClassNotFoundException, SQLException,
 			NamingException {
-		
-		 Context initialContext = new InitialContext();
-		//para ejecutar en Tomcat
-		// ds = (DataSource) initialContext.lookup("java:/comp/env/jdbc/pmantainer");
-		 Context envCtx = (Context) initialContext.lookup("java:comp/env");
-		 ds = (DataSource)
-		   envCtx.lookup("jdbc/pmantainer");
-		//para ejecutar en GlassFish
-		//ds = (DataSource) contextoInicial.lookup("jdbc/sisdis");
+
+		Context initialContext = new InitialContext();
+		// para ejecutar en Tomcat
+		// ds = (DataSource)
+		// initialContext.lookup("java:/comp/env/jdbc/pmantainer");
+		Context envCtx = (Context) initialContext.lookup("java:comp/env");
+		ds = (DataSource) envCtx.lookup("jdbc/pmantainer");
+		// para ejecutar en GlassFish
+		// ds = (DataSource) contextoInicial.lookup("jdbc/sisdis");
 
 	}
 
@@ -70,8 +70,6 @@ public class DatabaseFacade implements IDatabaseFacade {
 		return dbFacade;
 	}
 
-
-
 	@Override
 	public List<Project> getProjects() throws SQLException {
 		Connection connection = null;
@@ -91,7 +89,7 @@ public class DatabaseFacade implements IDatabaseFacade {
 				project.setCode(rs.getString("co_project"));
 				project.setStatus(rs.getString("co_status"));
 				project.setComments(rs.getString("ds_comments"));
-				//Falta incluir campos
+				// Falta incluir campos
 				projectList.add(project);
 			}
 
@@ -103,6 +101,27 @@ public class DatabaseFacade implements IDatabaseFacade {
 			DatabaseUtil.close(connection);
 		}
 		return projectList;
+	}
+
+	@Override
+	public void updateProjectComment(Integer id_project, String comment)
+			throws SQLException {
+		Connection connection = null;
+		PreparedStatement st = null;
+		String sql = "";
+		try {
+			connection = ds.getConnection();
+			sql = "update amadeusit.art_d_project_borrar set ds_comments = ? where id_project = ?";
+			st = connection.prepareStatement(sql);
+			st.setString(1, comment);
+			st.setInt(2, id_project);
+			st.executeUpdate();
+		} catch (SQLException e) {
+			throw new SQLException(e);
+		} finally {
+			DatabaseUtil.close(st);
+		}
+
 	}
 
 }

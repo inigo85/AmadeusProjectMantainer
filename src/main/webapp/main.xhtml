@@ -17,7 +17,7 @@
 			<p:ajax event="rowEditCancel" listener="#{projectBean.onCancel}"
 				update=":form:messages" />
 
-			<p:column headerText="Code" sortBy="#{project.code}">
+			<p:column headerText="Code" sortBy="#{project.code}" style="width:200px">
 				<h:outputText value="#{project.code}" />
 			</p:column>
 
@@ -27,11 +27,14 @@
 						<h:outputText value="#{project.comments}" />
 					</f:facet>
 					<f:facet name="input">
-						<h:outputText value="#{project.comments}" />
+						<h:inputText value="#{project.comments}" style="width:900px"/>
 					</f:facet>
 				</p:cellEditor>
 			</p:column>
 
+			<p:column headerText="Edit" style="width:6%">
+				<p:rowEditor />
+			</p:column>
 
 		</p:dataTable>
 	</h:form>

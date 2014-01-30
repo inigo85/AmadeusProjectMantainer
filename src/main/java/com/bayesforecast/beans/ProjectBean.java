@@ -34,12 +34,13 @@ public class ProjectBean implements Serializable{
 		}
 	}
 	
-	public void onEdit(RowEditEvent event){
+	public void onEdit(RowEditEvent event) throws SQLException{
 		Project project;
+		DatabaseFacade db = DatabaseFacade.getInstance();
 		project=(Project)event.getObject();
-		int id = project.getId();
-		@SuppressWarnings("unused")
-		int id2 = id;
+		int id_project = project.getId();
+		String comment = project.getComments();
+		db.updateProjectComment(id_project, comment);
 
 	}
 	

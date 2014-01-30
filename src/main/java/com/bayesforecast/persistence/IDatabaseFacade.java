@@ -9,4 +9,5 @@ public interface IDatabaseFacade {
 
 	public List<Project> getProjects() throws SQLException;
 
+	public void updateProjectComment(Integer id_project, String comment) throws SQLException;
 }
