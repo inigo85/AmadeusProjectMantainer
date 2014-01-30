@@ -1,19 +1,26 @@
 package com.bayesforecsast.modelo;
 
-import java.sql.SQLException;
-import java.util.List;
-import com.bayesforecast.persistence.DatabaseFacade;
+
 
 
 
 public class Project {
-
+	private Integer id;
 	private String code;
 	private String comments;
 	private String status;
 	private boolean isInScope;
 	private boolean belongsToAProgram;
 
+
+	
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
 	public String getCode() {
 		return code;

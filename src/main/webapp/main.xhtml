@@ -2,20 +2,37 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:p="http://primefaces.org/ui">
-    <h:head>
+<h:head>
 
-    </h:head>
+</h:head>
 <h:body>
 	<h:form id="form">
-		<p:dataTable var="project" value="#{projectBean.projectList}">
+		<p:growl id="messages" showDetail="true" />
 
-			<p:column headerText="Code">
+		<p:dataTable id="prj" var="project" value="#{projectBean.projectList}"
+			editable="true">
+
+			<p:ajax event="rowEdit" listener="#{projectBean.onEdit}"
+				update=":form:messages" />
+			<p:ajax event="rowEditCancel" listener="#{projectBean.onCancel}"
+				update=":form:messages" />
+
+			<p:column headerText="Code" sortBy="#{project.code}">
 				<h:outputText value="#{project.code}" />
 			</p:column>
 
 			<p:column headerText="Comments">
-				<h:outputText value="#{project.comments}" />
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{project.comments}" />
+					</f:facet>
+					<f:facet name="input">
+						<h:outputText value="#{project.comments}" />
+					</f:facet>
+				</p:cellEditor>
 			</p:column>
+
+
 		</p:dataTable>
 	</h:form>
 </h:body>

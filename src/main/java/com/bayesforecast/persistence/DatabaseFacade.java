@@ -87,6 +87,7 @@ public class DatabaseFacade implements IDatabaseFacade {
 			rs = st.executeQuery();
 			while (rs.next()) {
 				Project project = new Project();
+				project.setId(rs.getInt("id_project"));
 				project.setCode(rs.getString("co_project"));
 				project.setStatus(rs.getString("co_status"));
 				project.setComments(rs.getString("ds_comments"));
