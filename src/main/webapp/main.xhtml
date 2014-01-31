@@ -7,9 +7,17 @@
 </h:head>
 <h:body>
 	<p:layout fullPage="true" id="lay">
-		<!--   <p:layoutUnit position="north" size="65" header="Project List"
-			resizable="false" closable="false" collapsible="false">
-		</p:layoutUnit>-->
+		<p:layoutUnit position="north">
+			<h:form>
+				<p:toolbar>
+					<p:toolbarGroup align="right">
+						<p:commandButton value=" Logout"  
+							action="#{loginBean.logout()}" />
+					</p:toolbarGroup>
+
+				</p:toolbar>
+			</h:form>
+		</p:layoutUnit>
 		<p:layoutUnit position="center">
 			<p:tabView id="tabView">
 
@@ -22,7 +30,7 @@
 							paginator="true"
 							paginatorTemplate="{PreviousPageLink} {CurrentPageReport} {NextPageLink} {RowsPerPageDropdown}"
 							rows="20" type="none" paginatorPosition="bottom"
-							rowsPerPageTemplate="20,25,30" 
+							rowsPerPageTemplate="20,25,30"
 							filteredValue="#{projectBean.filteredList}">
 
 
@@ -50,21 +58,17 @@
 
 							<p:column headerText="Edit" style="width:50px">
 								<p:rowEditor id="editRow" />
-								<p:commandLink id="searchLink"
-									styleClass="ui-icon ui-icon-search" />
 								<p:tooltip for="editRow" value="Edit project comments"
 									showEffect="fade" hideEffect="fade" />
-								<p:tooltip for="searchLink" value="View project report"
-								showEffect="fade" hideEffect="fade" />
 							</p:column>
 
 						</p:dataTable>
 					</h:form>
 				</p:tab>
-				<p:tab id="tab2" title="Another Tabs?">
+				<!--  <p:tab id="tab2" title="Another Tabs?">
 					<h:form id="antoherForm">
 					</h:form>
-				</p:tab>
+				</p:tab>-->
 			</p:tabView>
 		</p:layoutUnit>
 

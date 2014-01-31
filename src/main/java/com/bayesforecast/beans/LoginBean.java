@@ -1,64 +1,58 @@
 package com.bayesforecast.beans;
 
 import java.io.Serializable;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpSession;
+
 import com.bayesforecsast.model.User;
 import com.bayesforecast.persistence.DatabaseFacade;
-
 
 /**
  * Bean implementation class ValidateBean.
  */
 @ManagedBean
 @SessionScoped
-public class LoginBean implements Serializable{
+public class LoginBean implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 2662757956069613054L;
 
-
 	/**
 	 * Login user.
 	 */
 	private String login;
-	
-	
+
 	/**
 	 * Password user.
 	 */
 	private String password;
-	
+
 	private int id;
-	
-	
+
 	public int getId() {
 		return id;
 	}
-
 
 	public void setId(int id) {
 		this.id = id;
 	}
 
-
 	private HttpSession session = null;
-	
 
 	/**
 	 * Empty constructor.
 	 */
-	public LoginBean(){
-		
+	public LoginBean() {
+
 	}
 
-	
 	/**
 	 * Get the login user.
 	 * 
@@ -68,17 +62,16 @@ public class LoginBean implements Serializable{
 		return login;
 	}
 
-	
 	/**
 	 * Set the login user.
 	 * 
-	 * @param login login user.
+	 * @param login
+	 *            login user.
 	 */
 	public void setLogin(String login) {
 		this.login = login;
 	}
 
-	
 	/**
 	 * Get the password user.
 	 * 
@@ -88,64 +81,73 @@ public class LoginBean implements Serializable{
 		return password;
 	}
 
-	
 	/**
 	 * Set the password user.
 	 * 
-	 * @param password password user.
+	 * @param password
+	 *            password user.
 	 */
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
-	
-	
+
 	public HttpSession getS() {
 		return session;
 	}
-
 
 	public void setS(HttpSession session) {
 		this.session = session;
 	}
 
-
-	public String obtainLogin() throws NamingException{
-		//DatabaseFacade db=DatabaseFacade.getInstance();
-		//User user;
-		return "main.xhtml?faces-redirect=true";
-		//user=db.login(login, password);
-		/*if(user!=null){
-		  setId(Integer.valueOf(user.getId()));
-		  FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("username", getId());
-		  FacesContext context = FacesContext.getCurrentInstance();
-		  context.getExternalContext().getFlash().setKeepMessages(false);
-		  if(user.getTipo()=='A' || user.getTipo()=='a')
-			return "admin.xhtml?faces-redirect=true";
-		  else
+	public String obtainLogin() throws NamingException {
+		// DatabaseFacade db=DatabaseFacade.getInstance();
+		// User user;
+		if (this.login.compareTo("admin") == 0
+				&& this.password.compareTo("admin") == 0) {
+			FacesContext.getCurrentInstance().getExternalContext()
+					.getSessionMap().put("username", this.login);
 			return "main.xhtml?faces-redirect=true";
-          
+		} else {
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+					"User not allowed to access this system", null);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			return "failed";
 		}
-		FacesMessage msg=new FacesMessage(FacesMessage.SEVERITY_ERROR, "Usuario no registrado en el sistema", null);
-	    FacesContext.getCurrentInstance().addMessage(null, msg);*/
-		//return "failed";
+		// user=db.login(login, password);
+		/*
+		 * if(user!=null){ setId(Integer.valueOf(user.getId()));
+		 * FacesContext.getCurrentInstance
+		 * ().getExternalContext().getSessionMap().put("username", getId());
+		 * FacesContext context = FacesContext.getCurrentInstance();
+		 * context.getExternalContext().getFlash().setKeepMessages(false);
+		 * if(user.getTipo()=='A' || user.getTipo()=='a') return
+		 * "admin.xhtml?faces-redirect=true"; else return
+		 * "main.xhtml?faces-redirect=true";
+		 * 
+		 * } FacesMessage msg=new FacesMessage(FacesMessage.SEVERITY_ERROR,
+		 * "Usuario no registrado en el sistema", null);
+		 * FacesContext.getCurrentInstance().addMessage(null, msg);
+		 */
+		// return "failed";
 	}
-	
-	public void mostrarMensaje(){
-		FacesMessage msg=new FacesMessage(FacesMessage.SEVERITY_INFO, "Usuario registrado correctamente en el sistema", null);
-	    FacesContext.getCurrentInstance().addMessage(null, msg);
-	    FacesContext context = FacesContext.getCurrentInstance();
-	    context.getExternalContext().getFlash().setKeepMessages(true);
+
+	public void mostrarMensaje() {
+		FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+				"Usuario registrado correctamente en el sistema", null);
+		FacesContext.getCurrentInstance().addMessage(null, msg);
+		FacesContext context = FacesContext.getCurrentInstance();
+		context.getExternalContext().getFlash().setKeepMessages(true);
 	}
-	
+
 	public String logout() {
-        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+		FacesContext.getCurrentInstance().getExternalContext()
+				.invalidateSession();
 		return "login.xhtml?faces-redirect=true";
-    }
-	
-	public String mostrarFormularioRegistro(){
+	}
+
+	public String mostrarFormularioRegistro() {
 		return "registro.xhtml?faces-redirect=true";
 	}
 	
-	
+
 }

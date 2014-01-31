@@ -3,13 +3,14 @@ package com.bayesforecast.beans;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
-
+import java.util.Map;
 import javax.faces.bean.ManagedBean;
-
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import org.primefaces.event.RowEditEvent;
-
 import com.bayesforecast.persistence.DatabaseFacade;
 import com.bayesforecsast.model.Project;
+
 
 
 
@@ -48,6 +49,15 @@ public class ProjectBean implements Serializable{
     public void onCancel(RowEditEvent event){
 		
 		
+	}
+    
+	public String logOut(){
+		ExternalContext tmpEC;
+	    Map<?, ?> sMap;
+	    tmpEC = FacesContext.getCurrentInstance().getExternalContext();
+	    sMap = tmpEC.getSessionMap();
+	    LoginBean user = (LoginBean) sMap.get("LoginBean");
+	    return user.logout();
 	}
 	
 	public List<Project> getProjectList() {
