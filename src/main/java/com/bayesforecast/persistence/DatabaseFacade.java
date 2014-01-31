@@ -132,7 +132,7 @@ public class DatabaseFacade implements IDatabaseFacade {
 		User usu = null;
 		try {
 			conn = ds.getConnection();
-			String sql;
+			//String sql;
 			/*
 			 * sql = "SELECT * FROM usuario WHERE nombre='" + usuario +
 			 * "' AND contraseña='" + contrasena + "';"; st =

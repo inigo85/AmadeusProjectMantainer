@@ -7,14 +7,13 @@
 </h:head>
 <h:body>
 	<p:layout fullPage="true" id="lay">
-		<p:layoutUnit position="north">
+		<p:layoutUnit position="north" size="13%">
 			<h:form>
-				<p:toolbar>
-					<p:toolbarGroup align="right">
-						<p:commandButton value=" Logout"  
+				<p:toolbar size="25%">
+					<p:toolbarGroup align="right" style="margin-right:10px">
+						<p:commandButton value=" Logout" icon="ui-icon-power"
 							action="#{loginBean.logout()}" />
 					</p:toolbarGroup>
-
 				</p:toolbar>
 			</h:form>
 		</p:layoutUnit>
@@ -73,5 +72,22 @@
 		</p:layoutUnit>
 
 	</p:layout>
+	<style type="text/css">
+.ui-layout-unit {
+	padding-top: 0;
+	padding-bottom: -5;
+	padding-right: 0;
+	padding-left: 0;
+	border: none;
+}
+
+.ui-dataList .ui-paginator {
+	font-size: 80%;
+}
+
+.ui-confirm-dialog,.ui-dialog {
+	
+}
+</style>
 </h:body>
 </html>

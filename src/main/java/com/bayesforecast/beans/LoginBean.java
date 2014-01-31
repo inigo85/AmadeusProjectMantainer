@@ -9,8 +9,6 @@ import javax.faces.context.FacesContext;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpSession;
 
-import com.bayesforecsast.model.User;
-import com.bayesforecast.persistence.DatabaseFacade;
 
 /**
  * Bean implementation class ValidateBean.
