@@ -13,7 +13,6 @@ public class Project {
 	private boolean belongsToAProgram;
 
 
-	
 	public Integer getId() {
 		return id;
 	}

@@ -26,13 +26,17 @@
 
 						<p:dataTable id="prj" var="project"
 							value="#{projectBean.projectList}" editable="true"
-							paginator="true"
+							paginator="true" rowKey="#{project.code}"
 							paginatorTemplate="{PreviousPageLink} {CurrentPageReport} {NextPageLink} {RowsPerPageDropdown}"
 							rows="20" type="none" paginatorPosition="bottom"
 							rowsPerPageTemplate="20,25,30"
-							filteredValue="#{projectBean.filteredList}">
+							selection="#{projectBean.selectedProject}"
+							filteredValue="#{projectBean.filteredList}"
+							selectionMode="single">
 
-
+							<f:facet name="header">  
+            					Click "View" button after selecting a row to see details  
+       						 </f:facet>
 							<p:ajax event="rowEdit" listener="#{projectBean.onEdit}"
 								update=":tabView:form:messages" />
 							<p:ajax event="rowEditCancel" listener="#{projectBean.onCancel}"
@@ -61,7 +65,25 @@
 									showEffect="fade" hideEffect="fade" />
 							</p:column>
 
+							<f:facet name="footer">
+								<p:commandButton id="viewButton" value="View"
+									icon="ui-icon-search" update=":tabView:form:display"
+									oncomplete="carDialog.show()" />
+							</f:facet>
+
 						</p:dataTable>
+						<p:dialog header="Car Detail" widgetVar="carDialog"
+							resizable="false" width="200" showEffect="explode"
+							hideEffect="explode">
+
+							<h:panelGrid id="display" columns="1" cellpadding="4">
+								<h:outputText value="Model:" />
+								<h:outputText value="Year:" />
+								<h:outputText value="Manufacturer:" />
+								<h:outputText value="#{projectBean.selectedProject.code}"
+									id="code" />
+							</h:panelGrid>
+						</p:dialog>
 					</h:form>
 				</p:tab>
 				<!--  <p:tab id="tab2" title="Another Tabs?">

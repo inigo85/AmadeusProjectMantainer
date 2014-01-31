@@ -24,6 +24,17 @@ public class ProjectBean implements Serializable{
 	private List<Project> projectList;
 	private List<Project> filteredList;
 	private DatabaseFacade db;
+	private Project selectedProject;
+
+
+	
+	public Project getSelectedProject() {
+		return selectedProject;
+	}
+
+	public void setSelectedProject(Project selectedProject) {
+		this.selectedProject = selectedProject;
+	}
 	
 	
 	public ProjectBean(){
