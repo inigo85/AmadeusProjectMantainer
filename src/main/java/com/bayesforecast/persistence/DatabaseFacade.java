@@ -1,19 +1,17 @@
 package com.bayesforecast.persistence;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-
-import com.bayesforecsast.modelo.Project;
+import com.bayesforecsast.model.Project;
+import com.bayesforecsast.model.User;
 
 public class DatabaseFacade implements IDatabaseFacade {
 
@@ -86,9 +84,9 @@ public class DatabaseFacade implements IDatabaseFacade {
 			while (rs.next()) {
 				Project project = new Project();
 				project.setId(rs.getInt("id_project"));
-				project.setCode(rs.getString("co_project"));
-				project.setStatus(rs.getString("co_status"));
 				project.setComments(rs.getString("ds_comments"));
+				project.setCode(rs.getString("co_project"));
+				// project.setComments(rs.getString("ds_comments"));
 				// Falta incluir campos
 				projectList.add(project);
 			}
@@ -122,6 +120,35 @@ public class DatabaseFacade implements IDatabaseFacade {
 			DatabaseUtil.close(st);
 			DatabaseUtil.close(connection);
 		}
+
+	}
+
+	@Override
+	public User login(String user, String password) {
+
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement st = null;
+		User usu = null;
+		try {
+			conn = ds.getConnection();
+			String sql;
+			/*
+			 * sql = "SELECT * FROM usuario WHERE nombre='" + usuario +
+			 * "' AND contraseña='" + contrasena + "';"; st =
+			 * conn.prepareStatement(sql); rs = st.executeQuery(); if
+			 * (rs.next()) { usu = new Usuario(); usu.setId(rs.getString("id"));
+			 * usu.setTipo(rs.getString("tipo").charAt(0));
+			 * usu.setNombre(rs.getString("nombre"));
+			 * usu.setEmail(rs.getString("email"));
+			 * usu.setContrasena(rs.getString("contraseña")); }
+			 */
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DatabaseUtil.close(conn, st, rs);
+		}
+		return usu;
 
 	}
 

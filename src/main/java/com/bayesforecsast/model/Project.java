@@ -1,4 +1,4 @@
-package com.bayesforecsast.modelo;
+package com.bayesforecsast.model;
 
 
 

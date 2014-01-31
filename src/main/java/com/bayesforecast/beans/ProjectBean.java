@@ -9,7 +9,7 @@ import javax.faces.bean.ManagedBean;
 import org.primefaces.event.RowEditEvent;
 
 import com.bayesforecast.persistence.DatabaseFacade;
-import com.bayesforecsast.modelo.Project;
+import com.bayesforecsast.model.Project;
 
 
 

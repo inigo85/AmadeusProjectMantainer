@@ -23,7 +23,7 @@ http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 
 	<!-- Welcome page -->
 	<welcome-file-list>
-		<welcome-file>faces/main.xhtml</welcome-file>
+		<welcome-file>faces/login.xhtml</welcome-file>
 	</welcome-file-list>
 
 	<!-- JSF mapping -->
@@ -50,5 +50,18 @@ http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 		<servlet-name>Faces Servlet</servlet-name>
 		<url-pattern>*.xhtml</url-pattern>
 	</servlet-mapping>
+	
+<error-page>
+<exception-type>javax.faces.application.ViewExpiredException</exception-type>
+<location>/faces/login.xhtml</location>
+</error-page>
+
+   
+<session-config>
+<session-timeout>
+30
+</session-timeout>
+</session-config>
+	
 
 </web-app>
