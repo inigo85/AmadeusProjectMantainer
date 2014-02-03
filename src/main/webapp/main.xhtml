@@ -12,7 +12,7 @@
 				<p:toolbar size="25%">
 					<p:toolbarGroup align="right" style="margin-right:10px">
 						<p:commandButton value=" Logout" icon="ui-icon-power"
-							action="#{loginBean.logout()}" />
+							action="#{loginBean.logout}" />
 					</p:toolbarGroup>
 				</p:toolbar>
 			</h:form>
@@ -20,7 +20,7 @@
 		<p:layoutUnit position="center">
 			<p:tabView id="tabView">
 
-				<p:tab id="tab1" title="Projects">
+				<p:tab id="tab1" title="Project List">
 					<h:form id="form">
 						<p:growl id="messages" showDetail="true" />
 
@@ -35,12 +35,8 @@
 							selectionMode="single">
 
 							<f:facet name="header">  
-            					Click "View" button after selecting a row to see details  
+            					Click "View" button after selecting a project to see details  
        						 </f:facet>
-							<p:ajax event="rowEdit" listener="#{projectBean.onEdit}"
-								update=":tabView:form:messages" />
-							<p:ajax event="rowEditCancel" listener="#{projectBean.onCancel}"
-								update=":tabView:form:messages" />
 
 							<p:column headerText="Code" sortBy="#{project.code}"
 								style="width:200px" filterBy="code" filterMatchMode="contains">
@@ -59,41 +55,119 @@
 								</p:cellEditor>
 							</p:column>
 
-							<p:column headerText="Edit" style="width:50px">
-								<p:rowEditor id="editRow" />
-								<p:tooltip for="editRow" value="Edit project comments"
-									showEffect="fade" hideEffect="fade" />
-							</p:column>
 
 							<f:facet name="footer">
 								<p:commandButton id="viewButton" value="View"
 									icon="ui-icon-search" update=":tabView:form:display"
-									oncomplete="carDialog.show()" />
+									oncomplete="projectDialog.show()" />
 							</f:facet>
 
 						</p:dataTable>
-						<p:dialog header="Car Detail" widgetVar="carDialog"
+						<p:dialog header="Project Details" widgetVar="projectDialog"
 							resizable="false" width="200" showEffect="explode"
 							hideEffect="explode">
 
-							<h:panelGrid id="display" columns="1" cellpadding="4">
-								<h:outputText value="Model:" />
-								<h:outputText value="Year:" />
-								<h:outputText value="Manufacturer:" />
+							<h:panelGrid id="display" columns="2" cellpadding="3">
+								<h:outputText value="Id:" />
+								<h:outputText value="#{projectBean.selectedProject.id}" id="id" />
+								<h:outputText value="Code:" />
 								<h:outputText value="#{projectBean.selectedProject.code}"
 									id="code" />
+								<h:outputText value="Comments:" />
+								<h:outputText value="#{projectBean.selectedProject.comments}"
+									id="comments" />
 							</h:panelGrid>
 						</p:dialog>
 					</h:form>
 				</p:tab>
-				<!--  <p:tab id="tab2" title="Another Tabs?">
+				<p:tab id="tab2" title="Manage Projects">
 					<h:form id="antoherForm">
+						<p:growl id="messagesProjectsComm" showDetail="true" />
+
+						<p:dataTable id="prj_comment" var="comm"
+							value="#{projectCommentBean.projectCommentList}" editable="true"
+							widgetVar="prjCommTable" styleClass="classEvento"
+							paginator="true"
+							paginatorTemplate="{PreviousPageLink} {CurrentPageReport} {NextPageLink} {RowsPerPageDropdown}"
+							rows="20" type="none" paginatorPosition="bottom"
+							style="margin-bottom:1%">
+
+							<p:ajax event="rowEdit" listener="#{projectCommentBean.onEdit}"
+								update=":tabView:antoherForm:messagesProjectsComm" />
+							<p:ajax event="rowEditCancel"
+								listener="#{projectCommentBean.onCancel}"
+								update=":tabView:antoherForm:messagesProjectsComm" />
+
+							<p:column headerText="Code" sortBy="#{comm.projectCode}"
+								style="width:200px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{comm.projectCode}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:autoComplete value="#{autoCompleteBean.selectedProject}"
+											completeMethod="#{autoCompleteBean.completeProject}" var="p"
+											itemLabel="#{p.code}" itemValue="#{p}"
+											converter="projectConverter" forceSelection="true">
+											<p:ajax event="itemSelect"
+												listener="#{projectCommentBean.handleSelect}" />
+										</p:autoComplete>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column headerText="Comments">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{comm.comment}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{comm.comment}" style="width:900px" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column headerText="Options">
+								<p:rowEditor id="editRow" />
+								<p:commandLink id="deleteLink"
+									styleClass="ui-icon ui-icon-trash"
+									onclick="confirmation.show()"
+									actionListener="#{projectCommentBean.setCommentId(comm.id)}" />
+								<p:tooltip for="editRow" value="Edit project comments"
+									showEffect="fade" hideEffect="fade" />
+								<p:tooltip for="deleteLink" value="Remove project comment"
+									showEffect="fade" hideEffect="fade" />
+							</p:column>
+						</p:dataTable>
+						<p:commandLink id="add" value="Add Comment"
+							actionListener="#{projectCommentBean.addComment}"
+							update="messagesProjectsComm, :tabView:antoherForm:prj_comment, :tabView:form:prj"
+							oncomplete="editLastDatatableRow('classEvento');"
+							styleClass="cmdLink" style="margin-top:5%;color: blue">
+						</p:commandLink>
+
+						<p:growl id="mesgComm" />
+
+						<p:confirmDialog id="confirmDialog"
+							message="Do you really want to delete this project comment?"
+							header="Elininar evento" severity="alert"
+							widgetVar="confirmation" appendTo="@(body)" >
+
+							<p:commandButton id="confirm" value="Yes, I'm sure"
+								update=":tabView:antoherForm:prj_comment, :tabView:form:prj"
+								oncomplete="confirmation.hide()" process="@this"
+								actionListener="#{projectCommentBean.onDelete(projectCommentBean.getId())}" />
+							<p:commandButton id="decline" value="Cancel"
+								onclick="confirmation.hide()" type="button" />
+
+						</p:confirmDialog>
 					</h:form>
-				</p:tab>-->
+				</p:tab>
 			</p:tabView>
 		</p:layoutUnit>
 
 	</p:layout>
+
 	<style type="text/css">
 .ui-layout-unit {
 	padding-top: 0;
@@ -111,5 +185,14 @@
 	
 }
 </style>
+	<script>
+		function editLastDatatableRow(name) {
+
+			jQuery('.' + name + ' tr').last().find('span.ui-icon-pencil').each(
+					function() {
+						jQuery(this).click()
+					});
+		}
+	</script>
 </h:body>
 </html>

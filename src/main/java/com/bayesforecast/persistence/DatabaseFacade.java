@@ -6,11 +6,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+
 import com.bayesforecsast.model.Project;
+import com.bayesforecsast.model.ProjectComment;
 import com.bayesforecsast.model.User;
 
 public class DatabaseFacade implements IDatabaseFacade {
@@ -109,7 +112,7 @@ public class DatabaseFacade implements IDatabaseFacade {
 		String sql = "";
 		try {
 			connection = ds.getConnection();
-			sql = "update amadeusit.art_d_project_borrar set ds_comments = ? where id_project = ?";
+			sql = "update amadeusit.bys_project_comment set na_comment = ? where id = ?";
 			st = connection.prepareStatement(sql);
 			st.setString(1, comment);
 			st.setInt(2, id_project);
@@ -132,7 +135,7 @@ public class DatabaseFacade implements IDatabaseFacade {
 		User usu = null;
 		try {
 			conn = ds.getConnection();
-			//String sql;
+			// String sql;
 			/*
 			 * sql = "SELECT * FROM usuario WHERE nombre='" + usuario +
 			 * "' AND contraseña='" + contrasena + "';"; st =
@@ -150,6 +153,102 @@ public class DatabaseFacade implements IDatabaseFacade {
 		}
 		return usu;
 
+	}
+
+	@Override
+	public List<ProjectComment> getProjectComments() throws SQLException {
+		Connection connection = null;
+		ResultSet rs = null;
+		PreparedStatement st = null;
+		List<ProjectComment> projectCommentList = new ArrayList<ProjectComment>();
+		try {
+			connection = ds.getConnection();
+			String sql;
+			sql = "select * from amadeusit.bys_project_comment"
+					+ " where co_gen_project is not null";
+			st = connection.prepareStatement(sql);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				ProjectComment project = new ProjectComment();
+				project.setId(rs.getInt("id"));
+				project.setComment(rs.getString("na_comment"));
+				project.setProjectCode(rs.getString("co_gen_project"));
+				projectCommentList.add(project);
+			}
+
+		} catch (SQLException e) {
+			throw new SQLException(e);
+		} finally {
+			DatabaseUtil.close(st);
+			DatabaseUtil.close(rs);
+			DatabaseUtil.close(connection);
+		}
+		return projectCommentList;
+	}
+
+	@Override
+	public void deleteProjecComment(Integer id) throws SQLException {
+		Connection conn = null;
+		PreparedStatement st = null;
+		try {
+			conn = ds.getConnection();
+			String sql;
+			sql = "DELETE FROM amadeusit.bys_project_comment WHERE id= ?";
+			st = conn.prepareStatement(sql);
+			st.setInt(1, id);
+			st.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DatabaseUtil.close(conn, st);
+		}
+
+	}
+
+	@Override
+	public void addProjectComment(ProjectComment projectComment)
+			throws SQLException {
+		Connection conn = null;
+		PreparedStatement st = null;
+		try {
+			conn = ds.getConnection();
+			String sql;
+			sql = "INSERT INTO amadeusit.bys_project_comment(co_gen_project, na_comment) VALUES(?, ?);";
+			st = conn.prepareStatement(sql);
+			st.setString(1, projectComment.getProjectCode());
+			st.setString(2, projectComment.getComment());
+			st.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DatabaseUtil.close(conn, st);
+		}
+
+	}
+
+	@Override
+	public Integer getLastInsertedCommentIndex() throws SQLException {
+		Connection conn = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		int id = -1;
+		try {
+			conn = ds.getConnection();
+			String sql;
+			sql = "select last_value from amadeusit.bys_project_comment_id_seq";
+			st = conn.prepareStatement(sql);
+			rs = st.executeQuery();
+			if (rs.next()) {
+				id = rs.getInt("last_value");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DatabaseUtil.close(conn, st, rs);
+		}
+		return id;
 	}
 
 }
