@@ -5,12 +5,6 @@ package com.bayesforecast.beans;
 import java.io.Serializable;
 import java.util.ArrayList;  
 import java.util.List;  
-  
-
-
-
-import org.primefaces.event.SelectEvent;
-
 import com.bayesforecast.converter.ProjectConverter;
 import com.bayesforecsast.model.Project;
 

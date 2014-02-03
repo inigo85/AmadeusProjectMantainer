@@ -19,7 +19,7 @@ import com.bayesforecsast.model.User;
 public class DatabaseFacade implements IDatabaseFacade {
 
 	private static DatabaseFacade dbFacade;
-	private DataSource ds; /* ?¿? */
+	private DataSource ds;
 
 	/**
 	 * Constructor privado de DatabaseFacade (patrón Singleton).
@@ -80,15 +80,22 @@ public class DatabaseFacade implements IDatabaseFacade {
 		try {
 			connection = ds.getConnection();
 			String sql;
-			sql = "select * from amadeusit.art_d_project_borrar"
-					+ " where co_gen_project is not null";
+			sql = "select a.co_gen_project, na_comment, b.id_project from("
+					+ "select a.co_gen_project, na_comment from "
+					+ "( select  co_gen_project from amadeusit.art_d_project "
+					+ "where co_gen_project is not null) a left join "
+					+ "amadeusit.bys_project_comment b using(co_gen_project) "
+					+ "group by  a.co_gen_project, na_comment order by a.co_gen_project) "
+					+ "a inner join (select min(id_project) id_project, co_gen_project "
+					+ "from amadeusit.art_d_project group by 2) b "
+					+ "on a.co_gen_project = b.co_gen_project group by 1,2,3;";
 			st = connection.prepareStatement(sql);
 			rs = st.executeQuery();
 			while (rs.next()) {
 				Project project = new Project();
 				project.setId(rs.getInt("id_project"));
-				project.setComments(rs.getString("ds_comments"));
-				project.setCode(rs.getString("co_project"));
+				project.setComments(rs.getString("na_comment"));
+				project.setCode(rs.getString("co_gen_project"));
 				// project.setComments(rs.getString("ds_comments"));
 				// Falta incluir campos
 				projectList.add(project);
