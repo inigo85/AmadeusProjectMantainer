@@ -33,14 +33,8 @@ public class DatabaseFacade implements IDatabaseFacade {
 			NamingException {
 
 		Context initialContext = new InitialContext();
-		// para ejecutar en Tomcat
-		// ds = (DataSource)
-		// initialContext.lookup("java:/comp/env/jdbc/pmantainer");
 		Context envCtx = (Context) initialContext.lookup("java:comp/env");
 		ds = (DataSource) envCtx.lookup("jdbc/pmantainer");
-		// para ejecutar en GlassFish
-		// ds = (DataSource) contextoInicial.lookup("jdbc/sisdis");
-
 	}
 
 	/**
