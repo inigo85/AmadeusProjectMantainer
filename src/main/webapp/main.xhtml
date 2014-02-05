@@ -108,7 +108,8 @@
 										<p:autoComplete value="#{autoCompleteBean.selectedProject}"
 											completeMethod="#{autoCompleteBean.completeProject}" var="p"
 											itemLabel="#{p.code}" itemValue="#{p}"
-											converter="projectConverter" forceSelection="true">
+											converter="projectConverter" 
+											forceSelection="true">
 											<p:ajax event="itemSelect"
 												listener="#{projectCommentBean.handleSelect}" />
 										</p:autoComplete>
@@ -150,8 +151,8 @@
 
 						<p:confirmDialog id="confirmDialog"
 							message="Do you really want to delete this project comment?"
-							header="Remove comment" severity="alert"
-							widgetVar="confirmation" appendTo="@(body)" >
+							header="Remove comment" severity="alert" widgetVar="confirmation"
+							appendTo="@(body)">
 
 							<p:commandButton id="confirm" value="Yes, I'm sure"
 								update=":tabView:antoherForm:prj_comment, :tabView:form:prj"
@@ -181,9 +182,6 @@
 	font-size: 80%;
 }
 
-.ui-confirm-dialog,.ui-dialog {
-	
-}
 </style>
 	<script>
 		function editLastDatatableRow(name) {

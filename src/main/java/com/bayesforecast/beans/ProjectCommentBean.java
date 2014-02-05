@@ -13,7 +13,6 @@ import com.bayesforecast.persistence.DatabaseFacade;
 import com.bayesforecsast.model.Project;
 import com.bayesforecsast.model.ProjectComment;
 
-
 public class ProjectCommentBean implements Serializable {
 	/**
 	 * 
@@ -75,24 +74,30 @@ public class ProjectCommentBean implements Serializable {
 	}
 
 	public void onCancel(RowEditEvent event) {
-
+		// Verificar si al cancelar no se ha introducido nada
+		ProjectComment projectComment;
+		projectComment = (ProjectComment) event.getObject();
+		if (projectComment.getProjectCode() == null
+				&& projectComment.getComment() == null) {
+			projectCommentList.remove(projectCommentList.size() - 1);
+		}
 	}
 
 	public void onDelete(String id) throws NamingException, SQLException {
 		int cont = 0;
 		db.deleteProjecComment(Integer.valueOf(id));
-		for(ProjectComment p:projectCommentList){
-			if(p.getId().compareTo(Integer.valueOf(id))==0)
+		for (ProjectComment p : projectCommentList) {
+			if (p.getId().compareTo(Integer.valueOf(id)) == 0)
 				break;
 			cont++;
 		}
 		projectCommentList.remove(cont);
 		ExternalContext tmpEC;
 		Map<?, ?> sMap;
-	    tmpEC = FacesContext.getCurrentInstance().getExternalContext();
-	    sMap = tmpEC.getSessionMap();
-	    ProjectBean projectBean = (ProjectBean) sMap.get("projectBean");
-	    projectBean.updateEvents();
+		tmpEC = FacesContext.getCurrentInstance().getExternalContext();
+		sMap = tmpEC.getSessionMap();
+		ProjectBean projectBean = (ProjectBean) sMap.get("projectBean");
+		projectBean.updateEvents();
 	}
 
 	public void addComment() {

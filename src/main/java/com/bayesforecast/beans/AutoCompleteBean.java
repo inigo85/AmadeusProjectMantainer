@@ -36,7 +36,9 @@ public class AutoCompleteBean implements Serializable{
     }  
   
   
-    public List<Project> completeProject(String query) {  
+    public List<Project> completeProject(String query) { 
+    	//busca indistintamente códigos sin importar si están en MAYUS/MINUS
+    	query = query.toUpperCase(); 
         List<Project> suggestions = new ArrayList<Project>();  
           
         for(Project p : projects) {  
