@@ -9,27 +9,25 @@ public interface IDatabaseFacade {
 
 	public List<Project> getProjects() throws SQLException;
 
-	public List<ProjectComment> getProjectComments() throws SQLException;
+	public List<ProjectComment> getProjectComments(String userName) throws SQLException;
 
-	public void updateProjectComment(Integer id_project, String comment)
-			throws SQLException;
+	public void updateProjectComment(Integer id_project, String comment,
+			String userName) throws SQLException;
 
 	public void deleteProjecComment(Integer id) throws SQLException;
 
-	public void addProjectComment(ProjectComment projectComment)
+	public void addProjectComment(ProjectComment projectComment, String userName)
 			throws SQLException;
 
 	public Integer getLastInsertedCommentIndex() throws SQLException;
 
-	public User login(String user, String password) throws SQLException;
-	
 	public List<User> getUsers() throws SQLException;
-	
+
 	public void insertUser(User user) throws SQLException;
-	
+
 	public void updateUser(Integer id, User userInfo) throws SQLException;
-	
+
 	public void deleteUser(Integer userId) throws SQLException;
-	
+
 	public User getUserByUserName(String userName) throws SQLException;
 }

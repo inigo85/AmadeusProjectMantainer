@@ -1,8 +1,6 @@
 package com.bayesforecsast.model;
 
-
-
-
+import java.sql.Date;
 
 public class Project {
 	private Integer id;
@@ -11,7 +9,47 @@ public class Project {
 	private String status;
 	private boolean isInScope;
 	private boolean belongsToAProgram;
+	private Date date;
+	private char type;
+	private String strType;
+	private String user;
 
+	public String getStrType() {
+		return strType;
+	}
+
+	public void setStrType(String strType) {
+		this.strType = strType;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public char getType() {
+		return type;
+	}
+
+	public void setType(char type) {
+		if (type == 'I'){
+			this.strType = "Inserted";
+		}else{
+			this.strType = "Updated";
+		}
+		this.type = type;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
 
 	public Integer getId() {
 		return id;

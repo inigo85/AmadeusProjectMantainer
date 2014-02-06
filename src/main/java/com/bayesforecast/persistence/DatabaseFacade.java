@@ -1,17 +1,17 @@
 package com.bayesforecast.persistence;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-
+import com.bayesforecast.util.CurrentDate;
 import com.bayesforecsast.model.Project;
 import com.bayesforecsast.model.ProjectComment;
 import com.bayesforecsast.model.User;
@@ -74,15 +74,18 @@ public class DatabaseFacade implements IDatabaseFacade {
 		try {
 			connection = ds.getConnection();
 			String sql;
-			sql = "select a.co_gen_project, na_comment, b.id_project from("
-					+ "select a.co_gen_project, na_comment from "
-					+ "( select  co_gen_project from amadeusit.art_d_project "
-					+ "where co_gen_project is not null) a left join "
-					+ "amadeusit.bys_project_comment b using(co_gen_project) "
-					+ "group by  a.co_gen_project, na_comment order by a.co_gen_project) "
-					+ "a inner join (select min(id_project) id_project, co_gen_project "
-					+ "from amadeusit.art_d_project group by 2) b "
-					+ "on a.co_gen_project = b.co_gen_project group by 1,2,3;";
+			sql = "select x.co_gen_project, x.na_comment, x.id_project, x.dt_comment_date, x.in_comment_type, "
+					+ "name from (select a.co_gen_project, na_comment, b.id_project, dt_comment_date, "
+					+ "case when in_comment_type='I' then 'Inserted' when in_comment_type='U' "
+					+ "then 'Edited' end as in_comment_type, id_user from(select a.co_gen_project, "
+					+ "na_comment,  dt_comment_date, in_comment_type, id_user from(select  "
+					+ "co_gen_project from amadeusit.art_d_project where co_gen_project is not null) a "
+					+ "left join amadeusit.bys_project_comment b using(co_gen_project) "
+					+ "group by a.co_gen_project, na_comment, dt_comment_date, in_comment_type, "
+					+ "id_user order by a.co_gen_project) a inner join (select min(id_project) "
+					+ "id_project, co_gen_project from amadeusit.art_d_project group by 2) "
+					+ "b on a.co_gen_project = b.co_gen_project group by 1,2,3,4,5,6) x "
+					+ "left join amadeusit.svt_user on x.id_user=id group by 1,2,3,4,5,6";
 			st = connection.prepareStatement(sql);
 			rs = st.executeQuery();
 			while (rs.next()) {
@@ -90,8 +93,11 @@ public class DatabaseFacade implements IDatabaseFacade {
 				project.setId(rs.getInt("id_project"));
 				project.setComments(rs.getString("na_comment"));
 				project.setCode(rs.getString("co_gen_project"));
-				// project.setComments(rs.getString("ds_comments"));
-				// Falta incluir campos
+				project.setDate(rs.getDate("dt_comment_date"));
+				if (rs.getString("in_comment_type") != null) {
+					project.setType(rs.getString("in_comment_type").charAt(0));
+				}
+				project.setUser(rs.getString("name"));
 				projectList.add(project);
 			}
 
@@ -106,17 +112,25 @@ public class DatabaseFacade implements IDatabaseFacade {
 	}
 
 	@Override
-	public void updateProjectComment(Integer id_project, String comment)
-			throws SQLException {
+	public void updateProjectComment(Integer id_project, String comment,
+			String userName) throws SQLException {
 		Connection connection = null;
 		PreparedStatement st = null;
 		String sql = "";
+		User user = null;
+		char type = 'U'; // Update
 		try {
 			connection = ds.getConnection();
-			sql = "update amadeusit.bys_project_comment set na_comment = ? where id = ?";
+			user = getUserByUserName(userName);
+			sql = "update amadeusit.bys_project_comment "
+					+ "set na_comment = ?, dt_comment_date = ?, "
+					+ " in_comment_type = ?, id_user = ? where id = ?";
 			st = connection.prepareStatement(sql);
 			st.setString(1, comment);
-			st.setInt(2, id_project);
+			st.setDate(2, new Date(CurrentDate.getCurrentDate().getTime()));
+			st.setString(3, String.valueOf(type));
+			st.setInt(4, Integer.valueOf(user.getId()));
+			st.setInt(5, id_project);
 			st.executeUpdate();
 		} catch (SQLException e) {
 			throw new SQLException(e);
@@ -128,52 +142,32 @@ public class DatabaseFacade implements IDatabaseFacade {
 	}
 
 	@Override
-	public User login(String user, String password) {
-
-		Connection conn = null;
-		ResultSet rs = null;
-		PreparedStatement st = null;
-		User usu = null;
-		try {
-			conn = ds.getConnection();
-			// String sql;
-			/*
-			 * sql = "SELECT * FROM usuario WHERE nombre='" + usuario +
-			 * "' AND contraseña='" + contrasena + "';"; st =
-			 * conn.prepareStatement(sql); rs = st.executeQuery(); if
-			 * (rs.next()) { usu = new Usuario(); usu.setId(rs.getString("id"));
-			 * usu.setTipo(rs.getString("tipo").charAt(0));
-			 * usu.setNombre(rs.getString("nombre"));
-			 * usu.setEmail(rs.getString("email"));
-			 * usu.setContrasena(rs.getString("contraseña")); }
-			 */
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DatabaseUtil.close(conn, st, rs);
-		}
-		return usu;
-
-	}
-
-	@Override
-	public List<ProjectComment> getProjectComments() throws SQLException {
+	public List<ProjectComment> getProjectComments(String userName)
+			throws SQLException {
 		Connection connection = null;
 		ResultSet rs = null;
 		PreparedStatement st = null;
 		List<ProjectComment> projectCommentList = new ArrayList<ProjectComment>();
+		User user = null;
 		try {
 			connection = ds.getConnection();
 			String sql;
+			user = getUserByUserName(userName);
 			sql = "select * from amadeusit.bys_project_comment"
-					+ " where co_gen_project is not null";
+					+ " where co_gen_project is not null and id_user = ?";
 			st = connection.prepareStatement(sql);
+			st.setInt(1, Integer.valueOf(user.getId()));
 			rs = st.executeQuery();
 			while (rs.next()) {
 				ProjectComment project = new ProjectComment();
 				project.setId(rs.getInt("id"));
 				project.setComment(rs.getString("na_comment"));
 				project.setProjectCode(rs.getString("co_gen_project"));
+				project.setDate(rs.getDate("dt_comment_date"));
+				if (rs.getString("in_comment_type") != null) {
+					project.setType(rs.getString("in_comment_type").charAt(0));
+				}
+				project.setUserId(rs.getInt("id_user"));
 				projectCommentList.add(project);
 			}
 
@@ -205,7 +199,7 @@ public class DatabaseFacade implements IDatabaseFacade {
 		}
 
 	}
-	
+
 	@Override
 	public void deleteUser(Integer userId) throws SQLException {
 		Connection conn = null;
@@ -226,17 +220,25 @@ public class DatabaseFacade implements IDatabaseFacade {
 	}
 
 	@Override
-	public void addProjectComment(ProjectComment projectComment)
+	public void addProjectComment(ProjectComment projectComment, String userName)
 			throws SQLException {
 		Connection conn = null;
 		PreparedStatement st = null;
+		User user = null;
+		char type = 'I'; // insertion
 		try {
 			conn = ds.getConnection();
+			user = getUserByUserName(userName);
 			String sql;
-			sql = "INSERT INTO amadeusit.bys_project_comment(co_gen_project, na_comment) VALUES(?, ?);";
+			sql = "INSERT INTO amadeusit.bys_project_comment"
+					+ "(co_gen_project, na_comment, dt_comment_date, in_comment_type, id_user) "
+					+ "VALUES(?, ?, ?, ?, ?);";
 			st = conn.prepareStatement(sql);
 			st.setString(1, projectComment.getProjectCode());
 			st.setString(2, projectComment.getComment());
+			st.setDate(3, new Date(CurrentDate.getCurrentDate().getTime()));
+			st.setString(4, String.valueOf(type));
+			st.setInt(5, Integer.valueOf(user.getId()));
 			st.executeUpdate();
 
 		} catch (Exception e) {
@@ -312,7 +314,6 @@ public class DatabaseFacade implements IDatabaseFacade {
 			sql = "INSERT INTO amadeusit.svt_user(name, password, type) VALUES(?, ?, ?);";
 			st = conn.prepareStatement(sql);
 			st.setString(1, user.getName());
-			//String hashedPassword = user.getPassword().replace("'", "''");
 			st.setString(2, user.getPassword());
 			st.setString(3, String.valueOf(user.getType()));
 			st.executeUpdate();
@@ -356,8 +357,7 @@ public class DatabaseFacade implements IDatabaseFacade {
 		try {
 			connection = ds.getConnection();
 			String sql;
-			sql = "select * from amadeusit.svt_user"
-					+ " where name = ?";
+			sql = "select * from amadeusit.svt_user" + " where name = ?";
 			st = connection.prepareStatement(sql);
 			st.setString(1, userName);
 			rs = st.executeQuery();

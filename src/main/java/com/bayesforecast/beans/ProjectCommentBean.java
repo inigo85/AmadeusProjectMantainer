@@ -4,11 +4,14 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.naming.NamingException;
+
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.SelectEvent;
+
 import com.bayesforecast.persistence.DatabaseFacade;
 import com.bayesforecsast.model.Project;
 import com.bayesforecsast.model.ProjectComment;
@@ -42,7 +45,7 @@ public class ProjectCommentBean implements Serializable {
 	public ProjectCommentBean() {
 		db = DatabaseFacade.getInstance();
 		try {
-			projectCommentList = db.getProjectComments();
+			projectCommentList = db.getProjectComments(getCommentUserName());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -57,20 +60,28 @@ public class ProjectCommentBean implements Serializable {
 		this.projectCommentList = projectCommentList;
 	}
 
-	public void onEdit(RowEditEvent event) throws SQLException {
+	public void onEdit(RowEditEvent event) throws SQLException, NamingException {
 		ProjectComment projectComment;
 		DatabaseFacade db = DatabaseFacade.getInstance();
 		projectComment = (ProjectComment) event.getObject();
+		String userName = getCommentUserName();
 		if (projectComment.getProjectCode() != null) {
 			db.updateProjectComment(projectComment.getId(),
-					projectComment.getComment());
+					projectComment.getComment(), userName);
 		} else {
 			// Añado último projectCode seleccionado del "Autocomplete"
 			projectComment.setProjectCode(selectedProjectCode);
-			db.addProjectComment(projectComment);
+			db.addProjectComment(projectComment, userName);
 			projectComment.setId(db.getLastInsertedCommentIndex());
 		}
+		refreshDatatable();
 
+	}
+
+	public String getCommentUserName() {
+		String userName = (String) FacesContext.getCurrentInstance()
+				.getExternalContext().getSessionMap().get("username");
+		return userName;
 	}
 
 	public void onCancel(RowEditEvent event) {
@@ -92,6 +103,10 @@ public class ProjectCommentBean implements Serializable {
 			cont++;
 		}
 		projectCommentList.remove(cont);
+		refreshDatatable();
+	}
+
+	private void refreshDatatable() throws NamingException, SQLException {
 		ExternalContext tmpEC;
 		Map<?, ?> sMap;
 		tmpEC = FacesContext.getCurrentInstance().getExternalContext();

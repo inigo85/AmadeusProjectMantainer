@@ -45,16 +45,18 @@
 
 							<p:column headerText="Comments" filterBy="comments"
 								filterMatchMode="contains">
-								<p:cellEditor>
-									<f:facet name="output">
-										<h:outputText value="#{project.comments}" />
-									</f:facet>
-									<f:facet name="input">
-										<h:inputText value="#{project.comments}" style="width:900px" />
-									</f:facet>
-								</p:cellEditor>
+								<h:outputText value="#{project.comments}" />
 							</p:column>
 
+							<p:column headerText="Date" filterBy="date"
+								filterMatchMode="contains">
+								<h:outputText value="#{project.date}" />
+							</p:column>
+
+							<p:column headerText="User name" filterBy="user"
+								filterMatchMode="contains">
+								<h:outputText value="#{project.user}" />
+							</p:column>
 
 							<f:facet name="footer">
 								<p:commandButton id="viewButton" value="View"
@@ -64,18 +66,25 @@
 
 						</p:dataTable>
 						<p:dialog header="Project Details" widgetVar="projectDialog"
-							resizable="false" width="200" showEffect="explode"
+							resizable="false" width="400" showEffect="explode"
 							hideEffect="explode">
 
 							<h:panelGrid id="display" columns="2" cellpadding="3">
-								<h:outputText value="Id:" />
-								<h:outputText value="#{projectBean.selectedProject.id}" id="id" />
 								<h:outputText value="Code:" />
 								<h:outputText value="#{projectBean.selectedProject.code}"
 									id="code" />
 								<h:outputText value="Comments:" />
 								<h:outputText value="#{projectBean.selectedProject.comments}"
 									id="comments" />
+								<h:outputText value="Comment date:" />
+								<h:outputText value="#{projectBean.selectedProject.date}"
+									id="date" />
+								<h:outputText value="Comment type:" />
+								<h:outputText value="#{projectBean.selectedProject.strType}"
+									id="type" />
+								<h:outputText value="User:" />
+								<h:outputText value="#{projectBean.selectedProject.user}"
+									id="user" />
 							</h:panelGrid>
 						</p:dialog>
 					</h:form>
@@ -108,8 +117,7 @@
 										<p:autoComplete value="#{autoCompleteBean.selectedProject}"
 											completeMethod="#{autoCompleteBean.completeProject}" var="p"
 											itemLabel="#{p.code}" itemValue="#{p}"
-											converter="projectConverter" 
-											forceSelection="true">
+											converter="projectConverter" forceSelection="true">
 											<p:ajax event="itemSelect"
 												listener="#{projectCommentBean.handleSelect}" />
 										</p:autoComplete>
@@ -142,7 +150,7 @@
 						</p:dataTable>
 						<p:commandLink id="add" value="Add Comment"
 							actionListener="#{projectCommentBean.addComment}"
-							update="messagesProjectsComm, :tabView:antoherForm:prj_comment, :tabView:form:prj"
+							update=":tabView:antoherForm:prj_comment, :tabView:form:prj"
 							oncomplete="editLastDatatableRow('classEvento');"
 							styleClass="cmdLink" style="margin-top:5%;color: blue">
 						</p:commandLink>
@@ -181,7 +189,6 @@
 .ui-dataList .ui-paginator {
 	font-size: 80%;
 }
-
 </style>
 	<script>
 		function editLastDatatableRow(name) {
