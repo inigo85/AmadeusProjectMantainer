@@ -1,6 +1,7 @@
 package com.bayesforecast.beans;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -9,6 +10,10 @@ import javax.faces.context.FacesContext;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpSession;
 
+import org.mindrot.jbcrypt.BCrypt;
+
+import com.bayesforecast.persistence.DatabaseFacade;
+import com.bayesforecsast.model.User;
 
 /**
  * Bean implementation class ValidateBean.
@@ -97,44 +102,29 @@ public class LoginBean implements Serializable {
 		this.session = session;
 	}
 
-	public String obtainLogin() throws NamingException {
-		// DatabaseFacade db=DatabaseFacade.getInstance();
-		// User user;
-		if (this.login.compareTo("admin") == 0
-				&& this.password.compareTo("admin") == 0) {
+	public String obtainLogin() throws NamingException, SQLException {
+		DatabaseFacade db = DatabaseFacade.getInstance();
+		User user;
+		user = db.getUserByUserName(this.login);
+		if (user != null) {
+			setId(Integer.valueOf(user.getId()));
 			FacesContext.getCurrentInstance().getExternalContext()
 					.getSessionMap().put("username", this.login);
-			return "main.xhtml?faces-redirect=true";
-		} else {
-			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-					"User not allowed to access this system", null);
-			FacesContext.getCurrentInstance().addMessage(null, msg);
-			return "failed";
+			FacesContext context = FacesContext.getCurrentInstance();
+			context.getExternalContext().getFlash().setKeepMessages(false);
+			if (BCrypt.checkpw(this.password, user.getPassword())) {
+				if (user.getType() == 'A') {
+					return "admin.xhtml?faces-redirect=true";
+				} else {
+					return "main.xhtml?faces-redirect=true";
+				}
+			}
 		}
-		// user=db.login(login, password);
-		/*
-		 * if(user!=null){ setId(Integer.valueOf(user.getId()));
-		 * FacesContext.getCurrentInstance
-		 * ().getExternalContext().getSessionMap().put("username", getId());
-		 * FacesContext context = FacesContext.getCurrentInstance();
-		 * context.getExternalContext().getFlash().setKeepMessages(false);
-		 * if(user.getTipo()=='A' || user.getTipo()=='a') return
-		 * "admin.xhtml?faces-redirect=true"; else return
-		 * "main.xhtml?faces-redirect=true";
-		 * 
-		 * } FacesMessage msg=new FacesMessage(FacesMessage.SEVERITY_ERROR,
-		 * "Usuario no registrado en el sistema", null);
-		 * FacesContext.getCurrentInstance().addMessage(null, msg);
-		 */
-		// return "failed";
-	}
-
-	public void mostrarMensaje() {
-		FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-				"Usuario registrado correctamente en el sistema", null);
+		FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+				"User not allowed to access this system", null);
 		FacesContext.getCurrentInstance().addMessage(null, msg);
-		FacesContext context = FacesContext.getCurrentInstance();
-		context.getExternalContext().getFlash().setKeepMessages(true);
+		return "failed";
+
 	}
 
 	public String logout() {
@@ -142,10 +132,5 @@ public class LoginBean implements Serializable {
 				.invalidateSession();
 		return "login.xhtml?faces-redirect=true";
 	}
-
-	public String mostrarFormularioRegistro() {
-		return "registro.xhtml?faces-redirect=true";
-	}
-	
 
 }

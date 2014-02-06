@@ -10,9 +10,15 @@
 		</managed-bean-class>
 		<managed-bean-scope>session</managed-bean-scope>
 	</managed-bean>
-		<managed-bean>
+	<managed-bean>
 		<managed-bean-name>projectCommentBean</managed-bean-name>
 		<managed-bean-class>com.bayesforecast.beans.ProjectCommentBean
+		</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>adminBean</managed-bean-name>
+		<managed-bean-class>com.bayesforecast.beans.AdminBean
 		</managed-bean-class>
 		<managed-bean-scope>session</managed-bean-scope>
 	</managed-bean>

@@ -1,0 +1,138 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+
+</h:head>
+<h:body>
+	<p:layout fullPage="true" id="lay">
+		<p:layoutUnit position="north" size="13%">
+			<h:form>
+				<p:toolbar size="25%">
+					<p:toolbarGroup align="right" style="margin-right:10px">
+						<p:commandButton value=" Logout" icon="ui-icon-power"
+							action="#{loginBean.logout}" />
+					</p:toolbarGroup>
+				</p:toolbar>
+			</h:form>
+		</p:layoutUnit>
+		<p:layoutUnit position="center">
+			<p:tabView id="tabView">
+
+				<p:tab id="tab1" title="Manage Users">
+					<h:form id="form">
+						<p:growl id="messages" showDetail="true" />
+
+						<p:dataTable id="usr" var="user" value="#{adminBean.userList}"
+							editable="true" paginator="true"
+							paginatorTemplate="{PreviousPageLink} {CurrentPageReport} {NextPageLink} {RowsPerPageDropdown}"
+							rows="20" type="none" paginatorPosition="bottom"
+							styleClass="classUser" rowsPerPageTemplate="20,25,30">
+
+							<p:ajax event="rowEdit" listener="#{adminBean.onEdit}"
+								update=":tabView:form:messages" />
+							<p:ajax event="rowEditCancel" listener="#{adminBean.onCancel}"
+								update=":tabView:form:messages" />
+
+							<p:column headerText="Name" sortBy="#{user.name}"
+								style="width:300px" filterBy="name" filterMatchMode="contains">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{user.name}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{user.name}" style="width:380px"/>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column headerText="Password" style="width:300px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{user.password}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{user.password}" style="width:380px"/>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column headerText="Type" style="width:200px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{user.type}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:selectOneMenu value="#{user.type}"
+											style="width:200px">
+									            <f:selectItem itemLabel="Select User Type" itemValue="" />
+										<f:selectItem itemLabel="Admin" itemValue="A" />
+										<f:selectItem itemLabel="Normal" itemValue="N" />
+										</p:selectOneMenu>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							<p:column headerText="Options">
+								<p:rowEditor id="editRow" />
+								<p:commandLink id="deleteLink"
+									styleClass="ui-icon ui-icon-trash"
+									onclick="confirmation.show()"
+									actionListener="#{adminBean.setUserId(user.id)}" />
+								<p:tooltip for="editRow" value="Edit user" showEffect="fade"
+									hideEffect="fade" />
+								<p:tooltip for="deleteLink" value="Remove user"
+									showEffect="fade" hideEffect="fade" />
+							</p:column>
+						</p:dataTable>
+						<p:commandLink id="add" value="Add User"
+							actionListener="#{adminBean.addUser}"
+							update="messages, :tabView:form:usr"
+							oncomplete="editLastDatatableRow('classUser');"
+							styleClass="cmdLink" style="margin-top:5%;color: blue">
+						</p:commandLink>
+						
+						<p:confirmDialog id="confirmDialog"
+							message="Do you really want to delete this user?"
+							header="Remove user" severity="alert" widgetVar="confirmation"
+							appendTo="@(body)">
+
+							<p:commandButton id="confirm" value="Yes, I'm sure"
+								update=":tabView:form:usr"
+								oncomplete="confirmation.hide()" process="@this"
+								actionListener="#{adminBean.onDelete(adminBean.getId())}" />
+							<p:commandButton id="decline" value="Cancel"
+								onclick="confirmation.hide()" type="button" />
+
+						</p:confirmDialog>
+					</h:form>
+				</p:tab>
+			</p:tabView>
+		</p:layoutUnit>
+
+	</p:layout>
+
+	<style type="text/css">
+.ui-layout-unit {
+	padding-top: 0;
+	padding-bottom: -5;
+	padding-right: 0;
+	padding-left: 0;
+	border: none;
+}
+
+.ui-dataList .ui-paginator {
+	font-size: 80%;
+}
+</style>
+	<script>
+		function editLastDatatableRow(name) {
+
+			jQuery('.' + name + ' tr').last().find('span.ui-icon-pencil').each(
+					function() {
+						jQuery(this).click()
+					});
+		}
+	</script>
+</h:body>
+</html>

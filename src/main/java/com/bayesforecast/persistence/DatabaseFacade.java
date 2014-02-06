@@ -205,6 +205,25 @@ public class DatabaseFacade implements IDatabaseFacade {
 		}
 
 	}
+	
+	@Override
+	public void deleteUser(Integer userId) throws SQLException {
+		Connection conn = null;
+		PreparedStatement st = null;
+		try {
+			conn = ds.getConnection();
+			String sql;
+			sql = "DELETE FROM amadeusit.svt_user WHERE id= ?";
+			st = conn.prepareStatement(sql);
+			st.setInt(1, userId);
+			st.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DatabaseUtil.close(conn, st);
+		}
+
+	}
 
 	@Override
 	public void addProjectComment(ProjectComment projectComment)
@@ -250,6 +269,114 @@ public class DatabaseFacade implements IDatabaseFacade {
 			DatabaseUtil.close(conn, st, rs);
 		}
 		return id;
+	}
+
+	@Override
+	public List<User> getUsers() throws SQLException {
+		Connection connection = null;
+		ResultSet rs = null;
+		PreparedStatement st = null;
+		List<User> userList = new ArrayList<User>();
+		try {
+			connection = ds.getConnection();
+			String sql;
+			sql = "select * from amadeusit.svt_user";
+			st = connection.prepareStatement(sql);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				User user = new User();
+				user.setId(String.valueOf(rs.getInt("id")));
+				user.setName(rs.getString("name"));
+				user.setPassword(rs.getString("password"));
+				user.setType(rs.getString("type").charAt(0));
+				userList.add(user);
+			}
+
+		} catch (SQLException e) {
+			throw new SQLException(e);
+		} finally {
+			DatabaseUtil.close(st);
+			DatabaseUtil.close(rs);
+			DatabaseUtil.close(connection);
+		}
+		return userList;
+	}
+
+	@Override
+	public void insertUser(User user) throws SQLException {
+		Connection conn = null;
+		PreparedStatement st = null;
+		try {
+			conn = ds.getConnection();
+			String sql;
+			sql = "INSERT INTO amadeusit.svt_user(name, password, type) VALUES(?, ?, ?);";
+			st = conn.prepareStatement(sql);
+			st.setString(1, user.getName());
+			//String hashedPassword = user.getPassword().replace("'", "''");
+			st.setString(2, user.getPassword());
+			st.setString(3, String.valueOf(user.getType()));
+			st.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DatabaseUtil.close(conn, st);
+		}
+
+	}
+
+	@Override
+	public void updateUser(Integer id, User userInfo) throws SQLException {
+		Connection connection = null;
+		PreparedStatement st = null;
+		String sql = "";
+		try {
+			connection = ds.getConnection();
+			sql = "update amadeusit.svt_user set name = ?,  type = ? where id = ?";
+			st = connection.prepareStatement(sql);
+			st.setString(1, userInfo.getName());
+			st.setString(2, String.valueOf(userInfo.getType()));
+			st.setInt(3, id);
+			st.executeUpdate();
+		} catch (SQLException e) {
+			throw new SQLException(e);
+		} finally {
+			DatabaseUtil.close(st);
+			DatabaseUtil.close(connection);
+		}
+
+	}
+
+	@Override
+	public User getUserByUserName(String userName) throws SQLException {
+		Connection connection = null;
+		ResultSet rs = null;
+		PreparedStatement st = null;
+		User user = null;
+		try {
+			connection = ds.getConnection();
+			String sql;
+			sql = "select * from amadeusit.svt_user"
+					+ " where name = ?";
+			st = connection.prepareStatement(sql);
+			st.setString(1, userName);
+			rs = st.executeQuery();
+			if (rs.next()) {
+				user = new User();
+				user.setId(String.valueOf(rs.getInt("id")));
+				user.setName(rs.getString("name"));
+				user.setPassword(rs.getString("password").replace("'", "''"));
+				user.setType(rs.getString("type").charAt(0));
+			}
+
+		} catch (SQLException e) {
+			throw new SQLException(e);
+		} finally {
+			DatabaseUtil.close(st);
+			DatabaseUtil.close(rs);
+			DatabaseUtil.close(connection);
+		}
+		return user;
 	}
 
 }

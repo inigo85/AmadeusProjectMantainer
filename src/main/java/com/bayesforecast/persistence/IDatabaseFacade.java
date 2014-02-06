@@ -22,4 +22,14 @@ public interface IDatabaseFacade {
 	public Integer getLastInsertedCommentIndex() throws SQLException;
 
 	public User login(String user, String password) throws SQLException;
+	
+	public List<User> getUsers() throws SQLException;
+	
+	public void insertUser(User user) throws SQLException;
+	
+	public void updateUser(Integer id, User userInfo) throws SQLException;
+	
+	public void deleteUser(Integer userId) throws SQLException;
+	
+	public User getUserByUserName(String userName) throws SQLException;
 }
