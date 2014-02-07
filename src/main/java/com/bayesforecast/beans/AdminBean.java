@@ -71,6 +71,8 @@ public class AdminBean implements Serializable {
 		DatabaseFacade db = DatabaseFacade.getInstance();
 		user = (User) event.getObject();
 		if (user.getId() != null) {
+			String hashedPasswd = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+			user.setPassword(hashedPasswd);
 			db.updateUser(Integer.valueOf(user.getId()), user);
 		} else {
 			String hashedPasswd = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());

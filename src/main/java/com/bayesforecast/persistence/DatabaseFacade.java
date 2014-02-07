@@ -333,11 +333,12 @@ public class DatabaseFacade implements IDatabaseFacade {
 		String sql = "";
 		try {
 			connection = ds.getConnection();
-			sql = "update amadeusit.svt_user set name = ?,  type = ? where id = ?";
+			sql = "update amadeusit.svt_user set name = ?,  password = ?, type = ? where id = ?";
 			st = connection.prepareStatement(sql);
 			st.setString(1, userInfo.getName());
-			st.setString(2, String.valueOf(userInfo.getType()));
-			st.setInt(3, id);
+			st.setString(2, userInfo.getPassword());
+			st.setString(3, String.valueOf(userInfo.getType()));
+			st.setInt(4, id);
 			st.executeUpdate();
 		} catch (SQLException e) {
 			throw new SQLException(e);
