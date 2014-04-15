@@ -79,13 +79,15 @@ public class DatabaseFacade implements IDatabaseFacade {
 					+ "case when in_comment_type='I' then 'Inserted' when in_comment_type='U' "
 					+ "then 'Edited' end as in_comment_type, id_user from(select a.co_gen_project, "
 					+ "na_comment,  dt_comment_date, in_comment_type, id_user from(select  "
-					+ "co_gen_project from amadeusit.art_d_project where co_gen_project is not null) a "
+					+ "co_gen_project from amadeusit.art_d_project where co_gen_project is not null"
+					+ " and (in_scope = 1 or (in_scope = 0 and id_status = 1))) a "
 					+ "left join amadeusit.bys_project_comment b using(co_gen_project) "
 					+ "group by a.co_gen_project, na_comment, dt_comment_date, in_comment_type, "
 					+ "id_user order by a.co_gen_project) a inner join (select min(id_project) "
 					+ "id_project, co_gen_project from amadeusit.art_d_project group by 2) "
 					+ "b on a.co_gen_project = b.co_gen_project group by 1,2,3,4,5,6) x "
-					+ "left join amadeusit.svt_user on x.id_user=id group by 1,2,3,4,5,6";
+					+ "left join amadeusit.svt_user on x.id_user=id "
+					+ "group by 1,2,3,4,5,6 order by 1";
 			st = connection.prepareStatement(sql);
 			rs = st.executeQuery();
 			while (rs.next()) {
